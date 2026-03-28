@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест: Способы получения ненасыщенных углеводородов</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Raleway:wght@300;400;600;700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #5DCAA5;
+  --green-dim: rgba(93,202,165,0.15);
+  --green-border: rgba(93,202,165,0.5);
+  --amber: #EF9F27;
+  --amber-dim: rgba(239,159,39,0.15);
+  --blue: #85B7EB;
+  --red: #E24B4A;
+  --red-dim: rgba(226,75,74,0.18);
+  --bg: #0c0c11;
+  --bg2: #13131b;
+  --bg3: #1a1a24;
+  --text: #f0f0ff;
+  --text2: #a0a0c0;
+  --text3: #606080;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: #000;
+  font-family: 'Raleway', sans-serif;
+  overflow: hidden;
+}
+
+.stage {
+  width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at 20% 50%, #0d1a14 0%, #0c0c11 60%);
+}
+
+.slide {
+  width: min(960px, 98vw);
+  height: min(580px, 96vh);
+  background: var(--bg);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+}
+.slide.active { display: flex; }
+
+/* Honeycomb BG */
+.hex-pattern {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='69'%3E%3Cpolygon points='30,3 57,17 57,52 30,66 3,52 3,17' fill='none' stroke='%23ffffff' stroke-width='0.8'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══ INTRO SLIDE ═══ */
+#s-intro {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0;
+}
+
+.intro-content {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 18px; padding: 48px 60px;
+  width: 100%;
+}
+
+.intro-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--green);
+  background: var(--green-dim); border: 1px solid var(--green-border);
+  padding: 6px 16px; border-radius: 30px;
+}
+
+.intro-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 52px; line-height: 1.1; color: #fff;
+  max-width: 640px;
+}
+.intro-title em { color: var(--green); font-style: normal; }
+
+.intro-subtitle {
+  font-size: 16px; color: var(--text2); line-height: 1.6;
+  max-width: 420px;
+}
+
+.intro-pills {
+  display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+}
+.pill {
+  padding: 7px 20px; border-radius: 30px; font-size: 13px;
+  font-weight: 700; border: 1.5px solid; letter-spacing: 0.04em;
+}
+.pill-g { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+.pill-o { color: var(--amber); border-color: var(--amber); background: var(--amber-dim); }
+.pill-b { color: var(--blue); border-color: rgba(133,183,235,0.5); background: rgba(133,183,235,0.1); }
+
+.intro-meta {
+  display: flex; gap: 32px; align-items: center;
+}
+.meta-item { text-align: center; }
+.meta-val { font-size: 28px; font-weight: 800; color: #fff; line-height: 1; }
+.meta-lbl { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+.btn-start {
+  padding: 16px 60px; border-radius: 50px;
+  border: 2px solid var(--green); background: var(--green);
+  color: #061a11; font-family: 'Raleway', sans-serif;
+  font-size: 17px; font-weight: 800; cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  margin-top: 6px;
+}
+.btn-start:hover { background: transparent; color: var(--green); transform: scale(1.03); }
+
+/* ═══ QUESTION SLIDE ═══ */
+#s-q { padding: 0; }
+
+.q-header {
+  position: relative; z-index: 1;
+  padding: 18px 28px 14px;
+  display: flex; align-items: center; gap: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.cat-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--green);
+  background: var(--green-dim); border: 1px solid var(--green-border);
+  padding: 5px 12px; border-radius: 20px; white-space: nowrap;
+}
+
+.progress-track {
+  flex: 1; height: 4px; background: rgba(255,255,255,0.1);
+  border-radius: 2px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: var(--green); border-radius: 2px;
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+.q-counter { font-size: 13px; font-weight: 700; color: var(--text3); white-space: nowrap; }
+
+.q-body {
+  position: relative; z-index: 1;
+  flex: 1; padding: 28px 36px 20px;
+  display: flex; flex-direction: column;
+  justify-content: space-between; gap: 20px;
+}
+
+.q-top { display: flex; flex-direction: column; gap: 12px; }
+
+.q-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--green);
+}
+
+.q-text {
+  font-size: 24px; font-weight: 700; color: #fff;
+  line-height: 1.4; max-width: 760px;
+}
+
+.q-formula {
+  font-family: 'Courier New', monospace;
+  font-size: 17px; color: var(--amber);
+  background: var(--amber-dim); border: 1.5px solid rgba(239,159,39,0.4);
+  padding: 10px 18px; border-radius: 8px;
+  display: inline-block; font-weight: 600;
+}
+
+.q-bottom { display: flex; flex-direction: column; gap: 14px; }
+
+.opts-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.opt-btn {
+  padding: 18px 20px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  display: flex; align-items: center; gap: 14px;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+.opt-btn:hover:not(.disabled) {
+  border-color: var(--green);
+  background: var(--green-dim);
+}
+.opt-btn.disabled { cursor: default; }
+.opt-btn.correct {
+  border-color: var(--green);
+  background: rgba(29,158,117,0.2);
+}
+.opt-btn.wrong {
+  border-color: var(--red);
+  background: var(--red-dim);
+}
+
+.opt-letter {
+  width: 32px; height: 32px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.7);
+  flex-shrink: 0; background: rgba(255,255,255,0.08);
+  transition: all 0.15s;
+}
+.opt-btn:hover:not(.disabled) .opt-letter {
+  border-color: var(--green); color: var(--green); background: rgba(93,202,165,0.2);
+}
+.opt-btn.correct .opt-letter {
+  border-color: var(--green); background: var(--green); color: #061a11;
+}
+.opt-btn.wrong .opt-letter {
+  border-color: var(--red); background: var(--red); color: #fff;
+}
+
+.opt-text {
+  font-size: 15px; font-weight: 600; color: #e0e0f8; line-height: 1.4;
+}
+.opt-btn:hover:not(.disabled) .opt-text { color: #fff; }
+.opt-btn.correct .opt-text { color: #9FE1CB; }
+.opt-btn.wrong .opt-text { color: #F7C1C1; }
+
+.feedback-box {
+  padding: 13px 18px; border-radius: 10px;
+  font-size: 14px; line-height: 1.65; font-weight: 500;
+  border-left: 3px solid; display: none;
+}
+.feedback-box.ok { background: rgba(29,158,117,0.15); border-color: var(--green); color: #9FE1CB; }
+.feedback-box.bad { background: var(--red-dim); border-color: var(--red); color: #F7C1C1; }
+
+.q-footer {
+  position: relative; z-index: 1;
+  padding: 12px 36px 20px;
+  display: flex; justify-content: flex-end;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.btn-next {
+  padding: 12px 32px; border-radius: 50px;
+  border: 1.5px solid var(--green); background: transparent;
+  color: var(--green); font-family: 'Raleway', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: background 0.15s, color 0.15s;
+  display: none;
+}
+.btn-next:hover { background: var(--green); color: #061a11; }
+.btn-next.visible { display: block; }
+
+/* ═══ RESULTS SLIDE ═══ */
+#s-res {
+  align-items: center; justify-content: center;
+  text-align: center;
+}
+
+.res-content {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 16px; padding: 40px 48px; width: 100%;
+}
+
+.res-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--green);
+}
+
+.res-score-big {
+  font-family: 'Playfair Display', serif;
+  font-size: 88px; line-height: 1; color: #fff;
+}
+.res-score-big span { color: var(--green); font-size: 52px; }
+
+.res-pct { font-size: 16px; color: var(--text2); }
+
+.res-grade {
+  padding: 9px 30px; border-radius: 30px;
+  font-size: 15px; font-weight: 700; border: 1.5px solid;
+}
+.g5 { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+.g4 { color: var(--blue); border-color: rgba(133,183,235,0.6); background: rgba(133,183,235,0.12); }
+.g3 { color: var(--amber); border-color: rgba(239,159,39,0.6); background: var(--amber-dim); }
+.g2 { color: #F09595; border-color: rgba(226,75,74,0.6); background: var(--red-dim); }
+
+.miss-container {
+  width: 100%; max-width: 580px; text-align: left;
+  max-height: 160px; overflow-y: auto;
+}
+.miss-hd {
+  font-size: 11px; color: var(--text3); letter-spacing: 0.1em;
+  text-transform: uppercase; font-weight: 700; margin-bottom: 8px;
+}
+.miss-item {
+  font-size: 13px; color: var(--text2);
+  padding: 7px 12px; border-radius: 7px;
+  background: rgba(255,255,255,0.05);
+  margin-bottom: 5px; line-height: 1.4;
+}
+.miss-n { color: var(--green); font-weight: 700; margin-right: 5px; }
+
+.btn-restart {
+  padding: 13px 44px; border-radius: 50px;
+  border: 1.5px solid var(--green); background: transparent;
+  color: var(--green); font-family: 'Raleway', sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.05em; margin-top: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-restart:hover { background: var(--green); color: #061a11; }
+
+/* Decorative corner accent */
+.corner-tl {
+  position: absolute; top: 0; left: 0;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle at top left, rgba(93,202,165,0.08) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.corner-br {
+  position: absolute; bottom: 0; right: 0;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle at bottom right, rgba(239,159,39,0.06) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* Molecule decoration */
+.molecule-deco {
+  position: absolute; right: 40px; bottom: 50px;
+  opacity: 0.12; z-index: 0; pointer-events: none;
+}
+
+/* Scrollbar styling */
+.miss-container::-webkit-scrollbar { width: 4px; }
+.miss-container::-webkit-scrollbar-track { background: transparent; }
+.miss-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- ── INTRO ── -->
+  <div class="slide active" id="s-intro">
+    <div class="hex-pattern"></div>
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+
+    <svg class="molecule-deco" width="180" height="140" viewBox="0 0 180 140">
+      <circle cx="50" cy="70" r="28" fill="#5DCAA5"/>
+      <circle cx="130" cy="70" r="28" fill="#5DCAA5"/>
+      <line x1="78" y1="62" x2="102" y2="62" stroke="#0c0c11" stroke-width="4"/>
+      <line x1="78" y1="70" x2="102" y2="70" stroke="#0c0c11" stroke-width="4"/>
+      <line x1="78" y1="78" x2="102" y2="78" stroke="#0c0c11" stroke-width="4"/>
+      <circle cx="22" cy="70" r="14" fill="#9090b0"/>
+      <line x1="36" y1="70" x2="22" y2="70" stroke="#0c0c11" stroke-width="3"/>
+      <circle cx="158" cy="70" r="14" fill="#9090b0"/>
+      <line x1="144" y1="70" x2="158" y2="70" stroke="#0c0c11" stroke-width="3"/>
+    </svg>
+
+    <div class="intro-content">
+      <div class="intro-eyebrow">Органическая химия · Занятие 5</div>
+      <div class="intro-title">
+        Способы получения<br><em>ненасыщенных</em><br>углеводородов
+      </div>
+      <div class="intro-subtitle">
+        Проверь знание промышленных и лабораторных методов синтеза
+      </div>
+      <div class="intro-pills">
+        <div class="pill pill-g">Алкены</div>
+        <div class="pill pill-o">Алкины</div>
+        <div class="pill pill-b">Диены</div>
+      </div>
+      <div class="intro-meta">
+        <div class="meta-item"><div class="meta-val">25</div><div class="meta-lbl">вопросов</div></div>
+        <div class="meta-item" style="color:rgba(255,255,255,0.1);font-size:28px">|</div>
+        <div class="meta-item"><div class="meta-val">4</div><div class="meta-lbl">варианта</div></div>
+        <div class="meta-item" style="color:rgba(255,255,255,0.1);font-size:28px">|</div>
+        <div class="meta-item"><div class="meta-val">~10</div><div class="meta-lbl">минут</div></div>
+      </div>
+      <button class="btn-start" onclick="startQuiz()">Начать тест →</button>
+    </div>
+  </div>
+
+  <!-- ── QUESTION ── -->
+  <div class="slide" id="s-q">
+    <div class="hex-pattern"></div>
+    <div class="corner-tl"></div>
+
+    <div class="q-header">
+      <div class="cat-badge" id="cat-badge">Алкены</div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="q-counter" id="q-counter">1 / 25</div>
+    </div>
+
+    <div class="q-body">
+      <div class="q-top">
+        <div class="q-eyebrow">Вопрос</div>
+        <div class="q-text" id="q-text"></div>
+        <div class="q-formula" id="q-formula" style="display:none"></div>
+      </div>
+      <div class="q-bottom">
+        <div class="opts-grid" id="opts-grid"></div>
+        <div class="feedback-box" id="feedback"></div>
+      </div>
+    </div>
+
+    <div class="q-footer">
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">Следующий →</button>
+    </div>
+  </div>
+
+  <!-- ── RESULTS ── -->
+  <div class="slide" id="s-res">
+    <div class="hex-pattern"></div>
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+
+    <div class="res-content">
+      <div class="res-eyebrow">Результат теста</div>
+      <div class="res-score-big" id="res-score"></div>
+      <div class="res-pct" id="res-pct"></div>
+      <div class="res-grade" id="res-grade"></div>
+      <div class="miss-container" id="miss-container"></div>
+      <button class="btn-restart" onclick="startQuiz()">Пройти ещё раз</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const QUESTIONS = [
+  {cat:"Алкены — промышленные", q:"Какой промышленный метод основан на термическом расщеплении длинных молекул алканов без доступа кислорода?", o:["Дегидрирование","Крекинг","Пиролиз метана","Гидролиз карбидов"], a:1, fb:"Крекинг — термическое расщепление тяжёлых фракций нефти. Даёт смесь алкана меньшей молекулярной массы и алкена."},
+  {cat:"Алкены — промышленные", q:"Что образуется при крекинге бутана?", f:"CH₃-CH₂-CH₂-CH₃  →t°→  ?", o:["Метан + пропен","Этан + этен","Пропан + метен","Водород + бутен"], a:1, fb:"Бутан → Этан (CH₃-CH₃) + Этен (CH₂=CH₂). Базовый источник этилена в промышленности."},
+  {cat:"Алкены — промышленные", q:"Какой металлический катализатор используется при дегидрировании алканов для получения алкенов?", o:["ZnO и MgO","H₂SO₄ и H₃PO₄","Ni, Pt, Pd, Cr₂O₃","CaC₂ и Ca(OH)₂"], a:2, fb:"При дегидрировании применяют Ni (никель), Pt, Pd, Cr₂O₃. Условие — сильное нагревание."},
+  {cat:"Алкены — промышленные", q:"Что отщепляется от алкана при дегидрировании с образованием алкена?", o:["Вода H₂O","Молекулярный водород H₂","Галогеноводород HHal","Галоген Hal₂"], a:1, fb:"Дегидрирование — каталитическое отщепление H₂. Углеродный скелет замыкает новую π-связь."},
+  {cat:"Алкены — лабораторные", q:"При какой минимальной температуре проводится дегидратация спиртов для получения алкенов?", o:["Выше 100°C","Выше 140°C","Выше 170°C","Выше 250°C"], a:2, fb:"Дегидратация спиртов идёт при t > 170°C. При 140°C вместо алкена образуется простой эфир."},
+  {cat:"Алкены — лабораторные", q:"Какой катализатор используется при лабораторной дегидратации спиртов в алкены?", o:["KOH (спиртовой)","Ni, t°","Конц. H₂SO₄ или H₃PO₄","ZnO/MgO"], a:2, fb:"Катализатор — конц. H₂SO₄ (или H₃PO₄, Al₂O₃). Выступают жёсткими водоотнимающими средствами."},
+  {cat:"Алкены — лабораторные", q:"Каким реагентом пользуются для дегидрогалогенирования галогеналканов в алкены?", o:["KOH водный","KOH спиртовой","H₂SO₄ конц.","Zn, t°"], a:1, fb:"Обязательно спиртовой KOH! Водный KOH даёт реакцию замещения — образуется спирт, а не алкен."},
+  {cat:"Алкены — лабораторные", q:"Какой метод использует действие Zn или Mg на вицинальные дигалогениды?", o:["Дегидрогалогенирование","Дегалогенирование","Дегидратация","Крекинг"], a:1, fb:"Дегалогенирование: двухвалентный металл (Zn, Mg) отрывает оба галогена с соседних атомов C, формируя π-связь."},
+  {cat:"Алкены — лабораторные", q:"Что такое «вицинальный» дигалогенид?", o:["Два галогена у одного атома C","Два галогена у соседних атомов C","Три галогена в молекуле","Галоген и OH у соседних C"], a:1, fb:"Вицинальный (лат. vicinus — сосед) — заместители расположены у соседних атомов углерода."},
+  {cat:"Правило Зайцева", q:"Согласно правилу Зайцева, водород при элиминировании отщепляется от атома углерода...", o:["С наибольшим числом атомов H","С наименьшим числом атомов H","Случайного атома C","Только от первичного атома C"], a:1, fb:"Правило Зайцева: H отщепляется от наименее гидрогенизированного соседнего атома — там, где водородов меньше."},
+  {cat:"Правило Зайцева", q:"При дегидратации бутан-2-ола главный продукт по правилу Зайцева:", o:["Бут-1-ен","Бут-2-ен","Бутан","Бутин-2"], a:1, fb:"Образуется бут-2-ен (выход >80%) — более замещённый алкен. Бут-1-ен является лишь побочным продуктом."},
+  {cat:"Алкины — промышленные", q:"При каком промышленном методе получают ацетилен (этин) из природного газа?", o:["Крекинг метана","Гидролиз CaC₂","Пиролиз метана при 1500°C","Дегидрирование метана"], a:2, fb:"Пиролиз метана при 1500°C: 2CH₄ → CH≡CH + 3H₂↑. Затем — резкое охлаждение (закалка)."},
+  {cat:"Алкины — промышленные", q:"Почему при пиролизе метана необходимо резкое охлаждение продуктов реакции?", o:["Чтобы не взорвался H₂","Без закалки ацетилен разложится на C и H₂","Для ускорения реакции","Чтобы отделить метан от этина"], a:1, fb:"Без быстрого охлаждения ацетилен разложится на сажу (C) и водород (H₂). Закалка фиксирует продукт."},
+  {cat:"Алкины — специфические", q:"Какой газ выделяется при действии воды на карбид кальция CaC₂?", o:["Метан","Этин (ацетилен)","Пропин","Этен"], a:1, fb:"CaC₂ + 2H₂O → CH≡CH↑ + Ca(OH)₂↓. Классический лабораторный и промышленный способ получения ацетилена."},
+  {cat:"Алкины — специфические", q:"Какой алкин образуется при гидролизе карбида магния Mg₂C₃?", o:["Этин","Пропин","Бутин","Метан"], a:1, fb:"Mg₂C₃ + 4H₂O → CH₃-C≡CH↑ + 2Mg(OH)₂↓ — образуется пропин (метилацетилен)."},
+  {cat:"Алкины — лабораторные", q:"Сколько молей спиртового KOH нужно для двойного дегидрогалогенирования (получение алкина)?", o:["1 моль водного KOH","1 моль спиртового KOH","2 моля спиртового KOH","2 моля водного KOH"], a:2, fb:"Для тройной связи нужно отщепить 2 молекулы HHal: избыток спиртового KOH (2 моль) и сильное нагревание."},
+  {cat:"Алкины — лабораторные", q:"Что образуется при реакции CH₃-CHBr-CHBr-CH₃ с 2KOH(спирт)?", o:["Бут-1-ен","Бутин-2","Бут-2-ен","Бутан"], a:1, fb:"Двойное дегидрогалогенирование вицинального дибромида даёт внутренний алкин — бутин-2 (CH₃-C≡C-CH₃)."},
+  {cat:"Алкины — лабораторные", q:"Для получения алкина дегалогенированием тетрагалогенида используют:", o:["KOH спиртовой, 2 моль","Избыток Zn или Mg, нагревание","H₂SO₄ конц., 170°C","ZnO/MgO, 400°C"], a:1, fb:"Избыток Zn (или Mg) забирает все 4 атома галогена, стягивая углеродный скелет в тройную связь."},
+  {cat:"Диены — промышленные", q:"Метод Лебедева — промышленный синтез бута-1,3-диена из:", o:["Бутана","Этанола","Ацетилена","Пропена"], a:1, fb:"2CH₃CH₂OH →(кат.,t°)→ CH₂=CH-CH=CH₂ + 2H₂O + H₂↑. Одновременная дегидратация и дегидрирование."},
+  {cat:"Диены — промышленные", q:"Какие катализаторы применяются в синтезе Лебедева?", o:["Ni, Pt","H₂SO₄, H₃PO₄","ZnO/MgO (Al₂O₃, SiO₂)","CaC₂, Ca(OH)₂"], a:2, fb:"ZnO/MgO в тандеме: ZnO отвечает за дегидрирование (отрыв H₂), MgO — за водоотнимание (отрыв H₂O)."},
+  {cat:"Диены — промышленные", q:"При какой температуре проводят синтез Лебедева?", o:["100–200°C","170–200°C","400–500°C","1500°C"], a:2, fb:"Температура синтеза Лебедева — 400–500°C. Это условие часто проверяется на экзаменах."},
+  {cat:"Диены — лабораторные", q:"Для лабораторного получения бута-1,3-диена из 1,4-дихлорбутана используют:", o:["Zn, t°","H₂SO₄ конц., 170°C","2KOH спиртовой, t°","CaC₂ + H₂O"], a:2, fb:"Двойное дегидрогалогенирование: + 2KOH(спирт) → CH₂=CH-CH=CH₂ + 2KCl + 2H₂O."},
+  {cat:"Сводная", q:"Какой метод объединяет одновременно дегидратацию и дегидрирование в одной реакции?", o:["Крекинг","Пиролиз","Метод Лебедева","Дегалогенирование"], a:2, fb:"Метод Лебедева уникален: одновременное отщепление воды (дегидратация) и водорода (дегидрирование)."},
+  {cat:"Сводная", q:"Гидролиз карбидов металлов — это специфический метод получения:", o:["Алкенов","Алкинов","Диенов","Аренов"], a:1, fb:"Гидролиз карбидов даёт алкины: CaC₂ → этин, Mg₂C₃ → пропин. Метод специфичен именно для алкинов."},
+  {cat:"Сводная", q:"При элиминировании от несимметричных молекул всегда применяют:", o:["Правило Марковникова","Правило Зайцева","Правило Гесса","Правило Вант-Гоффа"], a:1, fb:"Золотое правило элиминирования: правило Зайцева — H уходит от наименее гидрогенизированного атома C."}
+];
+
+const LETTERS = ['A','B','C','D'];
+let cur = 0, score = 0, answered = false, wrongs = [];
+
+function showSlide(id) {
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz() {
+  cur = 0; score = 0; answered = false; wrongs = [];
+  showSlide('s-q');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = QUESTIONS[cur];
+  const pct = Math.round((cur / QUESTIONS.length) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('q-counter').textContent = (cur + 1) + ' / ' + QUESTIONS.length;
+  document.getElementById('cat-badge').textContent = q.cat;
+  document.getElementById('q-text').textContent = q.q;
+  const fEl = document.getElementById('q-formula');
+  if (q.f) { fEl.style.display = 'inline-block'; fEl.textContent = q.f; }
+  else { fEl.style.display = 'none'; }
+  const fb = document.getElementById('feedback');
+  fb.style.display = 'none'; fb.className = 'feedback-box';
+  document.getElementById('btn-next').classList.remove('visible');
+  const grid = document.getElementById('opts-grid');
+  grid.innerHTML = '';
+  q.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span class="opt-letter">' + LETTERS[i] + '</span><span class="opt-text">' + opt + '</span>';
+    btn.onclick = () => pickAnswer(i, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function pickAnswer(i, el) {
+  if (answered) return;
+  answered = true;
+  const q = QUESTIONS[cur];
+  document.querySelectorAll('.opt-btn').forEach(b => b.classList.add('disabled'));
+  const fb = document.getElementById('feedback');
+  if (i === q.a) {
+    el.classList.add('correct'); score++;
+    fb.className = 'feedback-box ok';
+    fb.textContent = 'Верно! ' + q.fb;
+  } else {
+    el.classList.add('wrong');
+    document.querySelectorAll('.opt-btn')[q.a].classList.add('correct');
+    wrongs.push(cur);
+    fb.className = 'feedback-box bad';
+    fb.textContent = 'Неверно. ' + q.fb;
+  }
+  fb.style.display = 'block';
+  document.getElementById('btn-next').classList.add('visible');
+}
+
+function nextQuestion() {
+  cur++;
+  if (cur >= QUESTIONS.length) showResults();
+  else renderQuestion();
+}
+
+function showResults() {
+  showSlide('s-res');
+  const pct = Math.round(score / QUESTIONS.length * 100);
+  document.getElementById('res-score').innerHTML = score + '<span> / ' + QUESTIONS.length + '</span>';
+  document.getElementById('res-pct').textContent = 'Правильных ответов: ' + pct + '%';
+  const gr = document.getElementById('res-grade');
+  if (pct >= 90) { gr.className = 'res-grade g5'; gr.textContent = 'Отлично — «5»'; }
+  else if (pct >= 75) { gr.className = 'res-grade g4'; gr.textContent = 'Хорошо — «4»'; }
+  else if (pct >= 60) { gr.className = 'res-grade g3'; gr.textContent = 'Удовлетворительно — «3»'; }
+  else { gr.className = 'res-grade g2'; gr.textContent = 'Недостаточно — «2»'; }
+  const mc = document.getElementById('miss-container');
+  if (!wrongs.length) {
+    mc.innerHTML = '<div style="font-size:15px;color:#5DCAA5;text-align:center;padding:10px;font-weight:700">Все вопросы без ошибок!</div>';
+  } else {
+    let h = '<div class="miss-hd">Вопросы с ошибками (' + wrongs.length + '):</div>';
+    wrongs.forEach(idx => { h += '<div class="miss-item"><span class="miss-n">' + (idx+1) + '.</span>' + QUESTIONS[idx].q + '</div>'; });
+    mc.innerHTML = h;
+  }
+}
+</script>
+</body>
+</html>
